@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>魔術DPS検証所</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./main.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- タイトル -->
+    <section class="hero">
+      <h1>魔術DPS検証所</h1>
+      <p>
+        魔術ごとの通常詠唱・タメ詠唱・連続詠唱を比較できる検証サイトです。<br>
+        付帯効果は最大6つまで同時適用。ダメージは常に付帯効果込みで再計算されます。
+      </p>
+    </section>
+
+    <div class="layout">
+
+      <!-- 付帯効果 -->
+      <section class="panel">
+        <h2>付帯効果</h2>
+
+        <div id="effectsList" class="effects-grid"></div>
+      </section>
+
+      <!-- 比較表 -->
+      <section class="panel">
+        <div class="rows-header">
+          <div>
+            <h2>比較表</h2>
+            本サイトでは「輝石のつぶて」のダメージを100として基準化し、相対値で表示しています。
+          </div>
+
+          <button id="addRowBtn">＋ 行を追加</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="compare-table">
+
+            <thead>
+              <tr>
+                <th>設定</th>
+                <th>魔術</th>
+                <th>DPS（ダメージ/秒）</th>
+                <th>FP効率（ダメージ/FP）</th>
+                <th>総ダメージ</th>
+                <th>消費FP</th>
+                <th>詠唱時間（秒）</th>
+                <th>詠唱パターン</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="rowsTbody">
+              <!-- JSで生成 -->
+            </tbody>
+
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- モーダル -->
+  <div id="sequenceModalBackdrop" class="modal-backdrop">
+    <div class="modal">
+
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">タメ / 連続詠唱設定</div>
+          <div id="modalMagicName" class="muted">-</div>
+        </div>
+
+        <button id="closeModalBtn" class="ghost-btn">閉じる</button>
+      </div>
+
+      <div class="modal-grid">
+
+        <div class="control-stack">
+          <div class="mini-label">連続詠唱数</div>
+          <select id="modalCastCount"></select>
+          <div class="control-stack" id="modalHitCountWrap" style="display:none;">
+            <div class="mini-label">ヒット数</div>
+            <select id="modalHitCount"></select>
+          </div>
+        </div>
+
+        <div class="control-stack">
+          <div class="mini-label">各詠唱の種類</div>
+          <div id="modalSequenceGrid" class="sequence-modal-grid"></div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancelModalBtn" class="ghost-btn">キャンセル</button>
+        <button id="saveModalBtn">保存</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="./main.js"></script>
+</body>
+</html>

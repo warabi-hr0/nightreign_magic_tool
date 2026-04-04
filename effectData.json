@@ -1,0 +1,38 @@
+[
+  {
+    "id": "hp-max-attack-up",
+    "name": "HP最大時、攻撃力上昇",
+    "values": [0.07, 0.10, 0.14],
+    "appliesTo": "all"
+  },
+  {
+    "id": "magic-attack-up",
+    "name": "魔力攻撃力上昇",
+    "values": [0.06, 0.09, 0.12],
+    "appliesTo": "all"
+  },
+  {
+    "id": "sorcery-boost",
+    "name": "魔術強化",
+    "values": [0.05, 0.08, 0.11],
+    "appliesTo": "all"
+  },
+  {
+    "id": "charged-sorcery-boost",
+    "name": "魔術タメ強化",
+    "values": [0.09, 0.13, 0.18],
+    "appliesTo": "chargedOnly"
+  },
+  {
+    "id": "elemental-attack-up",
+    "name": "属性攻撃力上昇",
+    "values": [0.06, 0.08],
+    "appliesTo": "all"
+  },
+  {
+    "id": "sorcery-incantation-boost",
+    "name": "魔術/祈祷強化",
+    "values": [0.06, 0.08],
+    "appliesTo": "all"
+  }
+]

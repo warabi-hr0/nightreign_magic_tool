@@ -1,0 +1,236 @@
+[
+  {
+    "id": "magic-001",
+    "name": "輝石のつぶて",
+    "damage": { "normal": 100, "charged": 0 },
+    "frames": { "normal": 72, "charged": 0, "chainNormal": 55, "chainCharged": 0 },
+    "fp": { "normal": 7, "charged": 0 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-002",
+    "name": "輝石の彗星",
+    "damage": { "normal": 181, "charged": 250 },
+    "frames": { "normal": 102, "charged": 150, "chainNormal": 50, "chainCharged": 134 },
+    "fp": { "normal": 17, "charged": 17 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-003",
+    "name": "ほうき星",
+    "damage": { "normal": 188, "charged": 257 },
+    "frames": { "normal": 102, "charged": 150, "chainNormal": 50, "chainCharged": 134 },
+    "fp": { "normal": 24, "charged": 24 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-004",
+    "name": "渦巻くつぶて",
+    "damage": { "normal": 37, "charged": 42 },
+    "frames": { "normal": 102, "charged": 150, "chainNormal": 50, "chainCharged": 134 },
+    "fp": { "normal": 14, "charged": 14 },
+    "magicType": "",
+    "maxHits": 10
+  },
+  {
+    "id": "magic-005",
+    "name": "輝石の流星",
+    "damage": { "normal": 148, "charged": 168 },
+    "frames": { "normal": 117, "charged": 141, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 12, "charged": 12 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-006",
+    "name": "流星群",
+    "damage": { "normal": 177, "charged": 196 },
+    "frames": { "normal": 117, "charged": 141, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 23, "charged": 23 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-007",
+    "name": "結晶散弾",
+    "damage": { "normal": 252, "charged": 381 },
+    "frames": { "normal": 113, "charged": 133, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 14, "charged": 14 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-008",
+    "name": "ハイマの砲丸",
+    "damage": { "normal": 223, "charged": 286 },
+    "frames": { "normal": 163, "charged": 230, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 38, "charged": 38 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-009",
+    "name": "滅びの流星",
+    "damage": { "normal": 232, "charged": 276 },
+    "frames": { "normal": 117, "charged": 141, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 32, "charged": 32 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-010",
+    "name": "創星雨",
+    "damage": { "normal": 224, "charged": 285 },
+    "frames": { "normal": 117, "charged": 141, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 27, "charged": 32 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-011",
+    "name": "魔術の輝剣",
+    "damage": { "normal": 120, "charged": 134 },
+    "frames": { "normal": 84, "charged": 112, "chainNormal": 50, "chainCharged": 80 },
+    "fp": { "normal": 12, "charged": 12 },
+    "magicType": "輝剣の魔術"
+  },
+  {
+    "id": "magic-012",
+    "name": "降り注ぐ魔力",
+    "damage": { "normal": 308, "charged": 377 },
+    "frames": { "normal": 114, "charged": 142, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 18, "charged": 18 },
+    "magicType": "",
+    "maxHits": 5
+  },
+  {
+    "id": "magic-013",
+    "name": "ローレッタの大弓",
+    "damage": { "normal": 203, "charged": 257 },
+    "frames": { "normal": 209, "charged": 315, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 24, "charged": 24 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-014",
+    "name": "ローレッタの絶技",
+    "damage": { "normal": 375, "charged": 387 },
+    "frames": { "normal": 209, "charged": 315, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 39, "charged": 39 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-015",
+    "name": "カーリアの貫き",
+    "damage": { "normal": 242, "charged": 293 },
+    "frames": { "normal": 114, "charged": 166, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 17, "charged": 17 },
+    "magicType": "カーリアの剣の魔術"
+  },
+  {
+    "id": "magic-016",
+    "name": "夜の彗星",
+    "damage": { "normal": 156, "charged": 188 },
+    "frames": { "normal": 102, "charged": 150, "chainNormal": 50, "chainCharged": 134 },
+    "fp": { "normal": 21, "charged": 21 },
+    "magicType": "不可視の魔術"
+  },
+  {
+    "id": "magic-017",
+    "name": "夜巫女の霧",
+    "damage": { "normal": 409, "charged": 409 },
+    "frames": { "normal": 114, "charged": 157, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 20, "charged": 20 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-018",
+    "name": "溶岩弾（直撃のみ）",
+    "damage": { "normal": 103, "charged": 122 },
+    "frames": { "normal": 104, "charged": 135, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 16, "charged": 16 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-019",
+    "name": "溶岩弾（スリップダメージフルヒット）",
+    "damage": { "normal": 193, "charged": 230 },
+    "frames": { "normal": 104, "charged": 135, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 16, "charged": 16 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-020",
+    "name": "たぎる溶岩（直撃）",
+    "damage": { "normal": 122, "charged": 169 },
+    "frames": { "normal": 104, "charged": 135, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 28, "charged": 28 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-021",
+    "name": "たぎる溶岩（爆風）",
+    "damage": { "normal": 166, "charged": 203 },
+    "frames": { "normal": 104, "charged": 135, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 28, "charged": 28 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-022",
+    "name": "ザミェルの氷嵐",
+    "damage": { "normal": 251, "charged": 389 },
+    "frames": { "normal": 143, "charged": 200, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 17, "charged": 17 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-023",
+    "name": "砕け散る結晶",
+    "damage": { "normal": 257, "charged": 346 },
+    "frames": { "normal": 115, "charged": 157, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 27, "charged": 38 },
+    "magicType": "結晶人の魔術"
+  },
+  {
+    "id": "magic-024",
+    "name": "重力弾",
+    "damage": { "normal": 164, "charged": 222 },
+    "frames": { "normal": 116, "charged": 166, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 12, "charged": 12 },
+    "magicType": "重力の魔術"
+  },
+  {
+    "id": "magic-025",
+    "name": "星砕き",
+    "damage": { "normal": 223, "charged": 288 },
+    "frames": { "normal": 116, "charged": 166, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 18, "charged": 18 },
+    "magicType": "重力の魔術"
+  },
+  {
+    "id": "magic-026",
+    "name": "神託のシャボン",
+    "damage": { "normal": 300, "charged": 349 },
+    "frames": { "normal": 120, "charged": 143, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 12, "charged": 12 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-027",
+    "name": "神託の大シャボン",
+    "damage": { "normal": 281, "charged": 326 },
+    "frames": { "normal": 181, "charged": 230, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 16, "charged": 16 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-028",
+    "name": "怨霊呼び",
+    "damage": { "normal": 176, "charged": 249 },
+    "frames": { "normal": 108, "charged": 164, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 12, "charged": 12 },
+    "magicType": ""
+  },
+  {
+    "id": "magic-029",
+    "name": "古き死の怨霊",
+    "damage": { "normal": 211, "charged": 296 },
+    "frames": { "normal": 108, "charged": 164, "chainNormal": 0, "chainCharged": 0 },
+    "fp": { "normal": 21, "charged": 24 },
+    "magicType": ""
+  }
+]
