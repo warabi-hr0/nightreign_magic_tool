@@ -52,7 +52,7 @@
     "id": "magic-007",
     "name": "結晶散弾",
     "damage": { "normal": 252, "charged": 381 },
-    "frames": { "normal": 113, "charged": 133, "chainNormal": 0, "chainCharged": 0 },
+    "frames": { "normal": 114, "charged": 156, "chainNormal": 0, "chainCharged": 0 },
     "fp": { "normal": 14, "charged": 14 },
     "magicType": ""
   },
@@ -181,7 +181,7 @@
     "id": "magic-023",
     "name": "砕け散る結晶",
     "damage": { "normal": 257, "charged": 346 },
-    "frames": { "normal": 115, "charged": 157, "chainNormal": 0, "chainCharged": 0 },
+    "frames": { "normal": 114, "charged": 156, "chainNormal": 0, "chainCharged": 0 },
     "fp": { "normal": 27, "charged": 38 },
     "magicType": "結晶人の魔術"
   },

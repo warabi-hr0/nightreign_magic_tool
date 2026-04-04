@@ -263,14 +263,11 @@ button {
 }
 
 .control-inline select {
-  flex: 1;
+  flex: 1 1 0;
+  width: 0;
   min-width: 0;
   padding: 2px 4px;
   font-size: 12px;
-}
-
-.control-inline select {
-  width: auto;
 }
 
 .action-buttons {
@@ -573,5 +570,15 @@ button {
 
   .modal {
     padding: 12px;
+  }
+
+  .control-inline {
+  flex-direction: row;
+  }
+
+  .control-inline select {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
   }
 }
