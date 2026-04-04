@@ -198,7 +198,7 @@ button {
 
 .compare-table th:nth-child(1),
 .compare-table td:nth-child(1) {
-  width: 96px;
+  width: 70px;
 }
 
 .compare-table th:nth-child(2),
@@ -208,27 +208,27 @@ button {
 
 .compare-table th:nth-child(3),
 .compare-table td:nth-child(3) {
-  width: 56px;
+  width: 52px;
 }
 
 .compare-table th:nth-child(4),
 .compare-table td:nth-child(4) {
-  width: 78px;
+  width: 62px;
 }
 
 .compare-table th:nth-child(5),
 .compare-table td:nth-child(5) {
-  width: 46px;
+  width: 40px;
 }
 
 .compare-table th:nth-child(6),
 .compare-table td:nth-child(6) {
-  width: 60px;
+  width: 30px;
 }
 
 .compare-table th:nth-child(7),
 .compare-table td:nth-child(7) {
-  width: 56px;
+  width: 45px;
 }
 
 .compare-table th:nth-child(8),
@@ -238,7 +238,7 @@ button {
 
 .compare-table th:nth-child(9),
 .compare-table td:nth-child(9) {
-  width: 62px;
+  width: 59px;
 }
 
 .metric-cell {
@@ -358,7 +358,7 @@ button {
 
   .compare-table th:nth-child(1),
   .compare-table td:nth-child(1) {
-    width: 78px;
+    width: 56px;
   }
 
   .compare-table th:nth-child(2),
@@ -373,7 +373,7 @@ button {
 
   .compare-table th:nth-child(4),
   .compare-table td:nth-child(4) {
-    width: 64px;
+    width: 36px;
   }
 
   .compare-table th:nth-child(5),
@@ -383,12 +383,12 @@ button {
 
   .compare-table th:nth-child(6),
   .compare-table td:nth-child(6) {
-    width: 46px;
+    width: 38px;
   }
 
   .compare-table th:nth-child(7),
   .compare-table td:nth-child(7) {
-    width: 46px;
+    width: 40px;
   }
 
   .compare-table th:nth-child(8),
@@ -508,7 +508,7 @@ button {
 
   .compare-table th:nth-child(2),
   .compare-table td:nth-child(2) {
-    width: 72px;
+    width: 90px;
   }
 
   .compare-table th:nth-child(3),
@@ -518,7 +518,7 @@ button {
 
   .compare-table th:nth-child(4),
   .compare-table td:nth-child(4) {
-    width: 52px;
+    width: 30px;
   }
 
   .compare-table th:nth-child(5),
@@ -528,12 +528,12 @@ button {
 
   .compare-table th:nth-child(6),
   .compare-table td:nth-child(6) {
-    width: 36px;
+    width: 24px;
   }
 
   .compare-table th:nth-child(7),
   .compare-table td:nth-child(7) {
-    width: 42px;
+    width: 30px;
   }
 
   .compare-table th:nth-child(8),
@@ -580,5 +580,27 @@ button {
     flex: 1 1 0;
     width: 0;
     min-width: 0;
+  }
+}
+
+@media (max-width: 1400px) {
+  .control-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-inline select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    min-width: 36px;
   }
 }
