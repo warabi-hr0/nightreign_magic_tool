@@ -14,10 +14,10 @@
 
     <!-- タイトル -->
     <section class="hero">
-      <h1>魔術DPS検証所</h1>
+      <h1>わらび式ナイトレイン学会</h1>
       <p>
-        魔術ごとの通常詠唱・タメ詠唱・連続詠唱を比較できる検証サイトです。<br>
-        付帯効果は最大6つまで同時適用。ダメージは常に付帯効果込みで再計算されます。
+        魔術タメの検証サイトです。<br>
+        ダメージは常に付帯効果込みで再計算されます。
       </p>
     </section>
 
@@ -42,27 +42,27 @@
         </div>
 
         <div class="table-wrap">
-          <table class="compare-table">
+          <div class="table-scroll">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>設定</th>
+                  <th>魔術</th>
+                  <th>DPS(ダメージ/秒)</th>
+                  <th>FP効率(ダメージ/FP)</th>
+                  <th>総ダメージ</th>
+                  <th>消費FP</th>
+                  <th>詠唱時間(秒)</th>
+                  <th>詠唱パターン</th>
+                  <th></th>
+                </tr>
+              </thead>
 
-            <thead>
-              <tr>
-                <th>設定</th>
-                <th>魔術</th>
-                <th>DPS(ダメージ/秒)</th>
-                <th>FP効率(ダメージ/FP)</th>
-                <th>総ダメージ</th>
-                <th>消費FP</th>
-                <th>詠唱時間(秒)</th>
-                <th>詠唱パターン</th>
-                <th></th>
-              </tr>
-            </thead>
-
-            <tbody id="rowsTbody">
-              <!-- JSで生成 -->
-            </tbody>
-
-          </table>
+              <tbody id="rowsTbody">
+                <!-- JSで生成 -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 

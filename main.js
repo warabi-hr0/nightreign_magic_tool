@@ -57,7 +57,7 @@ function createDefaultRow() {
     hitCount: 1,
     searchKeyword: "",
     isMagicOpen: false,
-    magicJustOpened: false
+    isMagicSearchMode: false
   };
 }
 
@@ -70,7 +70,7 @@ function cloneRow(row) {
     hitCount: row.hitCount ?? 1,
     searchKeyword: "",
     isMagicOpen: false,
-    magicJustOpened: false
+    isMagicSearchMode: false
   };
 }
 
@@ -178,12 +178,7 @@ function escapeHtml(value) {
 }
 
 function getMagicOptionList(row) {
-  const selectedMagicName = getMagicById(row.magicId)?.name || "";
-  const keyword = row.magicJustOpened && row.searchKeyword === selectedMagicName
-    ? ""
-    : row.searchKeyword;
-
-  const normalizedKeyword = normalizeSearchText(keyword);
+  const normalizedKeyword = normalizeSearchText(row.searchKeyword);
   if (!normalizedKeyword) return magicData;
 
   return magicData.filter(magic =>
@@ -192,16 +187,33 @@ function getMagicOptionList(row) {
 }
 
 function getMagicInputValue(row) {
-  if (row.isMagicOpen) {
+  if (row.isMagicSearchMode) {
     return row.searchKeyword;
   }
   return getMagicById(row.magicId)?.name || "";
 }
 
-function createMagicPickerHtml(row) {
+function createMagicOptionsHtml(row) {
   const filteredList = getMagicOptionList(row);
-  const selectedMagicName = getMagicById(row.magicId)?.name || "";
 
+  if (filteredList.length === 0) {
+    return `<div class="magic-combobox-empty">一致する魔術がありません</div>`;
+  }
+
+  return filteredList.map(magic => `
+    <button
+      type="button"
+      class="magic-combobox-option ${magic.id === row.magicId ? "selected" : ""}"
+      data-role="magic-option"
+      data-row-id="${row.id}"
+      data-magic-id="${magic.id}"
+    >
+      ${escapeHtml(magic.name)}
+    </button>
+  `).join("");
+}
+
+function createMagicPickerHtml(row) {
   return `
     <div class="magic-combobox ${row.isMagicOpen ? "open" : ""}" data-row-id="${row.id}">
       <div class="magic-combobox-control">
@@ -213,8 +225,17 @@ function createMagicPickerHtml(row) {
           value="${escapeHtml(getMagicInputValue(row))}"
           placeholder="魔術を選択"
           autocomplete="off"
-          ${row.isMagicOpen ? "" : "readonly"}
+          ${row.isMagicSearchMode ? "" : "readonly"}
         >
+        <button
+          type="button"
+          class="magic-combobox-search"
+          data-role="magic-combobox-search"
+          data-row-id="${row.id}"
+          tabindex="-1"
+          aria-label="魔術を検索"
+          title="検索"
+        >🔍</button>
         <button
           type="button"
           class="magic-combobox-toggle"
@@ -222,22 +243,11 @@ function createMagicPickerHtml(row) {
           data-row-id="${row.id}"
           tabindex="-1"
           aria-label="魔術候補を開く"
+          title="候補を開く"
         >▼</button>
       </div>
       <div class="magic-combobox-menu ${row.isMagicOpen ? "" : "hidden"}">
-        ${filteredList.length > 0
-          ? filteredList.map(magic => `
-              <button
-                type="button"
-                class="magic-combobox-option ${magic.id === row.magicId ? "selected" : ""}"
-                data-role="magic-option"
-                data-row-id="${row.id}"
-                data-magic-id="${magic.id}"
-              >
-                ${escapeHtml(magic.name)}
-              </button>
-            `).join("")
-          : `<div class="magic-combobox-empty">一致する魔術がありません</div>`}
+        ${createMagicOptionsHtml(row)}
       </div>
     </div>
   `;
@@ -253,21 +263,44 @@ function refreshMagicOptionsOnly(rowId) {
   const menu = combo.querySelector(".magic-combobox-menu");
   if (!menu) return;
 
-  const filteredList = getMagicOptionList(row);
+  menu.innerHTML = createMagicOptionsHtml(row);
+  positionMagicMenu(rowId);
+  fitMagicMenuToViewport(rowId);
+}
 
-  menu.innerHTML = filteredList.length > 0
-    ? filteredList.map(magic => `
-        <button
-          type="button"
-          class="magic-combobox-option ${magic.id === row.magicId ? "selected" : ""}"
-          data-role="magic-option"
-          data-row-id="${row.id}"
-          data-magic-id="${magic.id}"
-        >
-          ${escapeHtml(magic.name)}
-        </button>
-      `).join("")
-    : `<div class="magic-combobox-empty">一致する魔術がありません</div>`;
+function positionMagicMenu(rowId) {
+  const combo = document.querySelector(`.magic-combobox[data-row-id="${rowId}"]`);
+  if (!combo) return;
+
+  const menu = combo.querySelector(".magic-combobox-menu");
+  if (!menu || menu.classList.contains("hidden")) return;
+
+  const comboRect = combo.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+  const margin = 12;
+  const gap = 4;
+  const minMenuHeight = 140;
+  const maxMenuHeight = 320;
+  const estimatedMenuHeight = Math.min(menu.scrollHeight || 0, maxMenuHeight);
+  const requiredHeight = Math.min(Math.max(estimatedMenuHeight, minMenuHeight), maxMenuHeight);
+  const spaceBelow = viewportHeight - comboRect.bottom - margin;
+  const spaceAbove = comboRect.top - margin;
+  const shouldOpenUp = spaceBelow < requiredHeight && spaceAbove > spaceBelow;
+
+  menu.style.position = "absolute";
+  menu.style.left = "0";
+  menu.style.right = "0";
+  menu.style.width = "auto";
+
+  if (shouldOpenUp) {
+    combo.dataset.menuDirection = "up";
+    menu.style.top = "auto";
+    menu.style.bottom = `calc(100% + ${gap}px)`;
+  } else {
+    combo.dataset.menuDirection = "down";
+    menu.style.top = `calc(100% + ${gap}px)`;
+    menu.style.bottom = "auto";
+  }
 }
 
 function updateMagicPicker(rowId, options = {}) {
@@ -299,16 +332,41 @@ function updateMagicPicker(rowId, options = {}) {
       }
     }
   }
+
+  positionMagicMenu(rowId);
+  fitMagicMenuToViewport(rowId);
+}
+
+function fitMagicMenuToViewport(rowId) {
+  const combo = document.querySelector(`.magic-combobox[data-row-id="${rowId}"]`);
+  if (!combo) return;
+
+  const menu = combo.querySelector(".magic-combobox-menu");
+  if (!menu || menu.classList.contains("hidden")) return;
+
+  const comboRect = combo.getBoundingClientRect();
+  const margin = 12;
+  const viewportHeight = window.innerHeight;
+  const direction = combo.dataset.menuDirection === "up" ? "up" : "down";
+
+  const availableHeight = direction === "up"
+    ? Math.max(140, Math.floor(comboRect.top - margin))
+    : Math.max(140, Math.floor(viewportHeight - comboRect.bottom - margin));
+
+  menu.style.maxHeight = `${availableHeight}px`;
 }
 
 function closeMagicCombobox(rowId, rerenderPickerOnly = true) {
   const row = state.rows.find(item => item.id === rowId);
-  if (!row) return;
-  if (!row.isMagicOpen) return;
+  if (!row || !row.isMagicOpen) return;
 
   row.isMagicOpen = false;
-  row.magicJustOpened = false;
+  row.isMagicSearchMode = false;
   row.searchKeyword = "";
+
+  if (state.ime.composingRowId === rowId) {
+    state.ime.composingRowId = null;
+  }
 
   if (rerenderPickerOnly) {
     updateMagicPicker(rowId);
@@ -319,8 +377,11 @@ function closeAllMagicComboboxes(exceptRowId = null) {
   state.rows.forEach(row => {
     if (row.id !== exceptRowId && row.isMagicOpen) {
       row.isMagicOpen = false;
-      row.magicJustOpened = false;
+      row.isMagicSearchMode = false;
       row.searchKeyword = "";
+      if (state.ime.composingRowId === row.id) {
+        state.ime.composingRowId = null;
+      }
       updateMagicPicker(row.id);
     }
   });
@@ -332,14 +393,22 @@ function openMagicCombobox(rowId) {
 
   closeAllMagicComboboxes(rowId);
 
-  if (!row.isMagicOpen) {
-    row.isMagicOpen = true;
-    row.magicJustOpened = true;
-    row.searchKeyword = getMagicById(row.magicId)?.name || "";
-    updateMagicPicker(rowId, { focusInput: true, selectAll: true });
-  } else {
-    updateMagicPicker(rowId, { focusInput: true, selectAll: true });
-  }
+  row.isMagicOpen = true;
+  row.isMagicSearchMode = false;
+  row.searchKeyword = "";
+  updateMagicPicker(rowId);
+}
+
+function enableMagicSearchMode(rowId) {
+  const row = state.rows.find(item => item.id === rowId);
+  if (!row) return;
+
+  closeAllMagicComboboxes(rowId);
+
+  row.isMagicOpen = true;
+  row.isMagicSearchMode = true;
+  row.searchKeyword = "";
+  updateMagicPicker(rowId, { focusInput: true });
 }
 
 function selectMagicForRow(rowId, magicId) {
@@ -352,7 +421,11 @@ function selectMagicForRow(rowId, magicId) {
   row.hitCount = 1;
   row.searchKeyword = "";
   row.isMagicOpen = false;
-  row.magicJustOpened = false;
+  row.isMagicSearchMode = false;
+
+  if (state.ime.composingRowId === rowId) {
+    state.ime.composingRowId = null;
+  }
 
   syncRowByMagic(row);
   rerender();
@@ -649,7 +722,6 @@ async function initialize() {
         if (!row) return;
 
         state.ime.composingRowId = null;
-        row.magicJustOpened = false;
         row.searchKeyword = target.value;
         refreshMagicOptionsOnly(rowId);
       }
@@ -661,13 +733,8 @@ async function initialize() {
       if (target.matches('[data-role="magic-combobox-input"]')) {
         const rowId = target.dataset.rowId;
         const row = state.rows.find(item => item.id === rowId);
-        if (!row) return;
+        if (!row || !row.isMagicSearchMode) return;
 
-        if (!row.isMagicOpen) {
-          row.isMagicOpen = true;
-        }
-
-        row.magicJustOpened = false;
         row.searchKeyword = target.value;
 
         if (state.ime.composingRowId === rowId) {
@@ -679,7 +746,7 @@ async function initialize() {
       }
     });
 
-    document.addEventListener("focusin", event => {
+    document.addEventListener("focusout", event => {
       const target = event.target;
 
       if (target.matches('[data-role="magic-combobox-input"]')) {
@@ -687,17 +754,11 @@ async function initialize() {
         const row = state.rows.find(item => item.id === rowId);
         if (!row) return;
 
-        if (!row.isMagicOpen) {
-          openMagicCombobox(rowId);
+        // 通常の表示モードでは focusout で閉じない
+        if (!row.isMagicSearchMode) {
+          return;
         }
-      }
-    });
 
-    document.addEventListener("focusout", event => {
-      const target = event.target;
-
-      if (target.matches('[data-role="magic-combobox-input"]')) {
-        const rowId = target.dataset.rowId;
         const container = document.querySelector(`.magic-combobox[data-row-id="${rowId}"]`);
         const related = event.relatedTarget;
 
@@ -706,8 +767,8 @@ async function initialize() {
         }
 
         window.setTimeout(() => {
-          const row = state.rows.find(item => item.id === rowId);
-          if (!row || !row.isMagicOpen) return;
+          const latestRow = state.rows.find(item => item.id === rowId);
+          if (!latestRow || !latestRow.isMagicOpen || !latestRow.isMagicSearchMode) return;
 
           const active = document.activeElement;
           const latestContainer = document.querySelector(`.magic-combobox[data-row-id="${rowId}"]`);
@@ -726,7 +787,7 @@ async function initialize() {
       if (target.matches('[data-role="magic-combobox-input"]')) {
         const rowId = target.dataset.rowId;
         const row = state.rows.find(item => item.id === rowId);
-        if (!row) return;
+        if (!row || !row.isMagicSearchMode) return;
 
         if (event.key === "Enter") {
           event.preventDefault();
@@ -815,6 +876,12 @@ async function initialize() {
         return;
       }
 
+      const searchButton = event.target.closest('[data-role="magic-combobox-search"]');
+      if (searchButton) {
+        enableMagicSearchMode(searchButton.dataset.rowId);
+        return;
+      }
+
       const toggleButton = event.target.closest('[data-role="magic-combobox-toggle"]');
       if (toggleButton) {
         const rowId = toggleButton.dataset.rowId;
@@ -837,7 +904,14 @@ async function initialize() {
 
         if (!row.isMagicOpen) {
           openMagicCombobox(rowId);
+          return;
         }
+
+        if (!row.isMagicSearchMode) {
+          closeMagicCombobox(rowId, true);
+          return;
+        }
+
         return;
       }
 
@@ -894,6 +968,22 @@ async function initialize() {
           break;
       }
     });
+
+    window.addEventListener("resize", () => {
+      state.rows.forEach(row => {
+        if (row.isMagicOpen) {
+          positionMagicMenu(row.id);
+        }
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      state.rows.forEach(row => {
+        if (row.isMagicOpen) {
+          positionMagicMenu(row.id);
+        }
+      });
+    }, true);
 
     document.getElementById("sequenceModalBackdrop").addEventListener("click", event => {
       if (event.target.id === "sequenceModalBackdrop") {

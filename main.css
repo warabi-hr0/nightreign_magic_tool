@@ -13,7 +13,9 @@
   --radius: 16px;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -68,6 +70,7 @@ h1 {
 
 .panel {
   padding: 12px;
+  overflow: visible;
 }
 
 .panel h2 {
@@ -147,11 +150,12 @@ button {
   margin-bottom: 10px;
 }
 
+/* ここが重要: 見切れの原因だった overflow を消す */
 .table-wrap {
-  overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel-3);
+  overflow: visible;
 }
 
 .compare-table {
@@ -159,6 +163,7 @@ button {
   border-collapse: collapse;
   min-width: 0;
   table-layout: fixed;
+  overflow: visible;
 }
 
 .compare-table th,
@@ -177,6 +182,12 @@ button {
 
 .compare-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+.compare-table thead,
+.compare-table tbody,
+.compare-table tr {
+  overflow: visible;
 }
 
 .compare-table thead th {
@@ -346,6 +357,179 @@ button {
   margin-top: 14px;
 }
 
+/* =========================
+   魔術コンボボックス
+   ========================= */
+
+.magic-combobox {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.magic-combobox.open {
+  z-index: 200;
+}
+
+.magic-combobox-control {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.magic-combobox-input {
+  font: inherit;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #10162c;
+  color: var(--text);
+  min-height: 30px;
+  width: 100%;
+  outline: none;
+  padding: 3px 56px 3px 7px;
+}
+
+.magic-combobox-input[readonly] {
+  cursor: pointer;
+}
+
+.magic-combobox-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(142, 162, 255, 0.35);
+}
+
+.magic-combobox-toggle {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  width: 28px;
+  min-width: 28px;
+  border: none;
+  border-left: 1px solid var(--line);
+  border-radius: 0 7px 7px 0;
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.magic-combobox-toggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.magic-combobox-search {
+  position: absolute;
+  top: 1px;
+  right: 29px;
+  bottom: 1px;
+  width: 28px;
+  min-width: 28px;
+  border: none;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 0;
+}
+
+.magic-combobox-search:hover,
+.magic-combobox-search:focus {
+  background: rgba(255, 255, 255, 0.04);
+  outline: none;
+}
+
+.magic-combobox-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: #10162c;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 320px;
+}
+
+.magic-combobox-menu.hidden {
+  display: none;
+}
+
+.magic-combobox-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: transparent;
+  color: var(--text);
+  min-height: 0;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.magic-combobox-option:last-child {
+  border-bottom: none;
+}
+
+.magic-combobox-option:hover,
+.magic-combobox-option:focus {
+  background: rgba(142, 162, 255, 0.22);
+  outline: none;
+}
+
+.magic-combobox-option.selected {
+  background: rgba(124, 224, 195, 0.16);
+}
+
+.magic-combobox-empty {
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.compare-table td:nth-child(2) .magic-combobox {
+  min-width: 0;
+}
+
+@media (max-width: 1400px) {
+  .control-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-inline select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    min-width: 36px;
+  }
+}
+
 @media (max-width: 1215px) {
   .effects-grid {
     grid-template-columns: repeat(3, minmax(150px, 1fr));
@@ -423,6 +607,34 @@ button {
   .modal-grid {
     grid-template-columns: 1fr;
   }
+
+  .magic-combobox-input {
+    min-height: 26px;
+    font-size: 10px;
+    padding: 2px 48px 2px 5px;
+  }
+
+  .magic-combobox-toggle {
+    width: 24px;
+    min-width: 24px;
+    font-size: 9px;
+  }
+
+  .magic-combobox-search {
+    right: 25px;
+    width: 24px;
+    min-width: 24px;
+    font-size: 10px;
+  }
+
+  .magic-combobox-option {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .magic-combobox-empty {
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 700px) {
@@ -477,10 +689,6 @@ button {
 
   .rows-header > div:first-child .muted {
     font-size: 11px;
-  }
-
-  .table-wrap {
-    overflow-x: visible;
   }
 
   .compare-table {
@@ -573,7 +781,7 @@ button {
   }
 
   .control-inline {
-  flex-direction: row;
+    flex-direction: row;
   }
 
   .control-inline select {
@@ -581,319 +789,12 @@ button {
     width: 0;
     min-width: 0;
   }
-}
 
-@media (max-width: 1400px) {
-  .control-inline {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .control-inline select {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .action-buttons button {
-    width: 100%;
-    min-width: 36px;
-  }
-}
-
-.magic-picker {
-  position: relative;
-}
-
-.magic-picker-trigger {
-  position: relative;
-  display: block;
-  padding-right: 28px;
-  text-align: left;
-  background: #10162c;
-  font-weight: 400;
-}
-
-.magic-picker-trigger::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  width: 7px;
-  height: 7px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: translateY(-65%) rotate(45deg);
-  pointer-events: none;
-  opacity: 0.9;
-}
-
-.magic-picker-trigger-label {
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.magic-picker-popover {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: max(100%, 240px);
-  background: #0f1530;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  z-index: 200;
-  overflow: hidden;
-}
-
-.magic-picker-input {
-  width: 100%;
-  border: none;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
-  background: #10162c;
-  color: var(--text);
-  min-height: 30px;
-  padding: 3px 28px 3px 7px;
-  font: inherit;
-}
-
-.magic-picker-input:focus {
-  outline: none;
-}
-
-.magic-picker-list {
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.magic-picker-option,
-.magic-picker-empty {
-  display: block;
-  width: 100%;
-  min-height: 30px;
-  padding: 6px 8px;
-  border: none;
-  border-radius: 0;
-  text-align: left;
-  background: transparent;
-  color: var(--text);
-  font: inherit;
-}
-
-.magic-picker-option {
-  cursor: pointer;
-  font-weight: 400;
-}
-
-.magic-picker-option:hover,
-.magic-picker-option:focus-visible,
-.magic-picker-option.is-selected {
-  background: rgba(142, 162, 255, 0.28);
-}
-
-.magic-picker-empty {
-  color: var(--muted);
-}
-
-@media (max-width: 1215px) {
-  .magic-picker-popover {
-    width: max(100%, 200px);
-  }
-
-  .magic-picker-input,
-  .magic-picker-option,
-  .magic-picker-empty {
-    min-height: 26px;
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 700px) {
-  .magic-picker-popover {
-    width: max(100%, 170px);
-  }
-
-  .magic-picker-input,
-  .magic-picker-option,
-  .magic-picker-empty {
-    min-height: 22px;
-    padding: 4px 6px;
-    font-size: 9px;
-  }
-
-  .magic-picker-input {
-    padding-right: 24px;
-  }
-
-  .magic-picker-trigger {
-    padding-right: 22px;
-  }
-
-  .magic-picker-trigger::after {
-    right: 8px;
-    width: 6px;
-    height: 6px;
-  }
-}
-
-今の main.css は table ベースの比較表と既存 select / button の見た目が定義されているので、その下にこのコンボボックス用スタイルを足す形で大丈夫です。
-
-/* =========================
-   魔術コンボボックス
-   ========================= */
-
-.magic-combobox {
-  position: relative;
-  width: 100%;
-}
-
-.magic-combobox-control {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-}
-
-.magic-combobox-input {
-  font: inherit;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: #10162c;
-  color: var(--text);
-  min-height: 30px;
-  padding: 3px 30px 3px 7px;
-  width: 100%;
-  outline: none;
-}
-
-.magic-combobox-input[readonly] {
-  cursor: pointer;
-}
-
-.magic-combobox-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(142, 162, 255, 0.35);
-}
-
-.magic-combobox-toggle {
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  bottom: 1px;
-  width: 28px;
-  min-width: 28px;
-  border: none;
-  border-left: 1px solid var(--line);
-  border-radius: 0 7px 7px 0;
-  background: transparent;
-  color: var(--text);
-  padding: 0;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 10px;
-  line-height: 1;
-}
-
-.magic-combobox-toggle:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.magic-combobox-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  z-index: 120;
-  background: #10162c;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.magic-combobox-menu.hidden {
-  display: none;
-}
-
-.magic-combobox-option {
-  display: block;
-  width: 100%;
-  text-align: left;
-  font: inherit;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: transparent;
-  color: var(--text);
-  min-height: 0;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-weight: 400;
-}
-
-.magic-combobox-option:last-child {
-  border-bottom: none;
-}
-
-.magic-combobox-option:hover,
-.magic-combobox-option:focus {
-  background: rgba(142, 162, 255, 0.22);
-  outline: none;
-}
-
-.magic-combobox-option.selected {
-  background: rgba(124, 224, 195, 0.16);
-}
-
-.magic-combobox-empty {
-  padding: 8px 10px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.compare-table td:nth-child(2) .magic-combobox {
-  min-width: 0;
-}
-
-@media (max-width: 1215px) {
-  .magic-combobox-input {
-    min-height: 26px;
-    padding: 2px 26px 2px 5px;
-    font-size: 10px;
-  }
-
-  .magic-combobox-toggle {
-    width: 24px;
-    min-width: 24px;
-    font-size: 9px;
-  }
-
-  .magic-combobox-option {
-    padding: 6px 8px;
-    font-size: 10px;
-  }
-
-  .magic-combobox-empty {
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 700px) {
   .magic-combobox-input {
     min-height: 22px;
-    padding: 1px 22px 1px 3px;
     font-size: 9px;
     border-radius: 6px;
+    padding: 1px 40px 1px 3px;
   }
 
   .magic-combobox-toggle {
@@ -903,10 +804,17 @@ button {
     font-size: 8px;
   }
 
+  .magic-combobox-search {
+    right: 21px;
+    width: 20px;
+    min-width: 20px;
+    font-size: 9px;
+  }
+
   .magic-combobox-menu {
     top: calc(100% + 3px);
     border-radius: 8px;
-    max-height: 180px;
+    max-height: 320px;
   }
 
   .magic-combobox-option {
