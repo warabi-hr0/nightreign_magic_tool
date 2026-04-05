@@ -34,8 +34,14 @@ function getSelectedEffects() {
     .map(slot => {
       const effect = effectData.find(item => item.id === slot.effectId);
       if (!effect) return null;
+
+      if (slot.valueIndex === "" || slot.valueIndex == null) {
+        return null;
+      }
+
       const idx = Number(slot.valueIndex);
-      if (Number.isNaN(idx) || effect.values[idx] == null) return null;
+      if (!Number.isInteger(idx) || idx < 0 || effect.values[idx] == null) return null;
+
       return { ...effect, value: effect.values[idx] };
     })
     .filter(Boolean);
