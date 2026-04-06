@@ -197,7 +197,7 @@
     "id": "magic-026",
     "name": "神託のシャボン",
     "damage": { "normal": 300, "charged": 349 },
-    "frames": { "normal": 120, "charged": 143, "chainNormal": 0, "chainCharged": 0 },
+    "frames": { "normal": 120, "charged": 144, "chainNormal": 0, "chainCharged": 0 },
     "fp": { "normal": 12, "charged": 12 },
     "magicType": ""
   },

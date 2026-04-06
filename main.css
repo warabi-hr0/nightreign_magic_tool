@@ -295,7 +295,7 @@ button {
 
 .action-buttons button {
   width: auto;
-  min-width: 56px;
+  min-width: 50px;
   flex: 1;
 }
 
@@ -526,16 +526,6 @@ button {
     width: 100%;
     min-width: 0;
   }
-
-  .action-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .action-buttons button {
-    width: 100%;
-    min-width: 36px;
-  }
 }
 
 @media (max-width: 1215px) {
@@ -642,6 +632,16 @@ button {
 
   .magic-combobox-empty {
     font-size: 10px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    min-width: 36px;
   }
 }
 
