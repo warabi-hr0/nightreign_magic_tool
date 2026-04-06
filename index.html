@@ -38,31 +38,34 @@
             本サイトでは「輝石のつぶて」のダメージを100として基準化し、相対値で表示しています。
           </div>
 
-          <button id="addRowBtn">＋ 行を追加</button>
+          <div class="rows-actions">
+            <button id="expandAllRowsBtn">魔術を一括展開</button>
+            <button id="addRowBtn">＋ 行を追加</button>
+          </div>
         </div>
 
         <div class="table-wrap">
-          <div class="table-scroll">
-            <table class="compare-table">
-              <thead>
-                <tr>
-                  <th>設定</th>
-                  <th>魔術</th>
-                  <th>DPS(ダメージ/秒)</th>
-                  <th>FP効率(ダメージ/FP)</th>
-                  <th>総ダメージ</th>
-                  <th>消費FP</th>
-                  <th>詠唱時間(秒)</th>
-                  <th>詠唱パターン</th>
-                  <th></th>
-                </tr>
-              </thead>
+          <table class="compare-table">
 
-              <tbody id="rowsTbody">
-                <!-- JSで生成 -->
-              </tbody>
-            </table>
-          </div>
+            <thead>
+              <tr>
+                <th>設定</th>
+                <th>魔術</th>
+                <th class="sortable-header" data-sort-key="dps">DPS(ダメージ/秒)</th>
+                <th class="sortable-header" data-sort-key="fpEfficiency">FP効率(ダメージ/FP)</th>
+                <th class="sortable-header" data-sort-key="totalDamage">総ダメージ</th>
+                <th class="sortable-header" data-sort-key="totalFp">消費FP</th>
+                <th class="sortable-header" data-sort-key="totalSeconds">詠唱時間(秒)</th>
+                <th>詠唱パターン</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="rowsTbody">
+              <!-- JSで生成 -->
+            </tbody>
+
+          </table>
         </div>
       </section>
 
@@ -105,6 +108,47 @@
         <button id="saveModalBtn">保存</button>
       </div>
 
+    </div>
+  </div>
+
+  <div id="expandAllModalBackdrop" class="modal-backdrop">
+    <div class="modal expand-all-modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">魔術を一括展開</div>
+          <div class="muted">表示条件を選択してください</div>
+        </div>
+        <button id="closeExpandAllModalBtn" class="ghost-btn">閉じる</button>
+      </div>
+
+      <div class="modal-grid expand-all-modal-grid">
+        <div class="control-stack">
+          <div class="mini-label">タメVer</div>
+          <label class="expand-all-check">
+            <input type="checkbox" id="expandIncludeCharged">
+            <span>タメVerも含める</span>
+          </label>
+        </div>
+
+        <div class="control-stack">
+          <div class="mini-label">連続詠唱の最大回数</div>
+          <select id="expandMaxCastCount">
+            <option value="1">1回まで</option>
+            <option value="2">2回まで</option>
+            <option value="3">3回まで</option>
+            <option value="4">4回まで</option>
+            <option value="5">5回まで</option>
+            <option value="6">6回まで</option>
+            <option value="7">7回まで</option>
+            <option value="8">8回まで</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancelExpandAllModalBtn" class="ghost-btn">キャンセル</button>
+        <button id="applyExpandAllModalBtn">展開する</button>
+      </div>
     </div>
   </div>
 

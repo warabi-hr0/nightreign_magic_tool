@@ -12,8 +12,16 @@ const state = {
     draftCastModes: ["normal"],
     draftHitCount: 1
   },
+  expandAll: {
+    includeCharged: false,
+    maxCastCount: 1
+  },
   ime: {
     composingRowId: null
+  },
+  sort: {
+    key: "",
+    direction: "desc"
   }
 };
 
@@ -34,10 +42,7 @@ function getSelectedEffects() {
     .map(slot => {
       const effect = effectData.find(item => item.id === slot.effectId);
       if (!effect) return null;
-
-      if (slot.valueIndex === "" || slot.valueIndex == null) {
-        return null;
-      }
+      if (slot.valueIndex === "" || slot.valueIndex == null) return null;
 
       const idx = Number(slot.valueIndex);
       if (!Number.isInteger(idx) || idx < 0 || effect.values[idx] == null) return null;
@@ -78,6 +83,77 @@ function cloneRow(row) {
     isMagicOpen: false,
     isMagicSearchMode: false
   };
+}
+
+function createExpandedMagicRows(options = {}) {
+  const includeCharged = Boolean(options.includeCharged);
+  const maxCastCount = Math.max(1, Math.min(8, Number(options.maxCastCount) || 1));
+  const rows = [];
+
+  magicData.forEach(magic => {
+    const caps = getMagicCapabilities(magic);
+    const maxCountForMagic = caps.supportsChain ? maxCastCount : 1;
+
+    // 通常版
+    for (let castCount = 1; castCount <= maxCountForMagic; castCount += 1) {
+      const normalRow = createDefaultRow();
+      normalRow.magicId = magic.id;
+      normalRow.castCount = castCount;
+      normalRow.castModes = Array.from({ length: castCount }, () => "normal");
+      normalRow.hitCount = 1;
+      syncRowByMagic(normalRow);
+      rows.push(normalRow);
+    }
+
+    // タメ版
+    // 連続詠唱ありなら
+    // タメ
+    // タメ→通常
+    // タメ→通常→通常
+    // ... の形で追加する
+    if (includeCharged && caps.supportsCharged) {
+      for (let castCount = 1; castCount <= maxCountForMagic; castCount += 1) {
+        const chargedRow = createDefaultRow();
+        chargedRow.magicId = magic.id;
+        chargedRow.castCount = castCount;
+        chargedRow.castModes = Array.from({ length: castCount }, (_, index) =>
+          index === 0 ? "charged" : "normal"
+        );
+        chargedRow.hitCount = 1;
+        syncRowByMagic(chargedRow);
+        rows.push(chargedRow);
+      }
+    }
+  });
+
+  return rows;
+}
+
+function createAllMagicRowsWithCharged() {
+  const rows = [];
+
+  magicData.forEach(magic => {
+    const normalRow = createDefaultRow();
+    normalRow.magicId = magic.id;
+    normalRow.castCount = 1;
+    normalRow.castModes = ["normal"];
+    normalRow.hitCount = 1;
+    syncRowByMagic(normalRow);
+    rows.push(normalRow);
+
+    const caps = getMagicCapabilities(magic);
+    if (caps.supportsCharged) {
+      const chargedRow = createDefaultRow();
+      chargedRow.magicId = magic.id;
+      chargedRow.castCount = 1;
+      chargedRow.castModes = ["charged"];
+      chargedRow.hitCount = 1;
+      syncRowByMagic(chargedRow);
+      rows.push(chargedRow);
+    }
+  });
+
+  return rows;
 }
 
 function getMagicCapabilities(magic) {
@@ -165,6 +241,82 @@ function calculateRowResult(row) {
     fpEfficiency,
     appliedHitCount
   };
+}
+
+function getSortedRows() {
+  const rows = [...state.rows];
+  const { key, direction } = state.sort;
+
+  if (!key) {
+    return rows;
+  }
+
+  const multiplier = direction === "asc" ? 1 : -1;
+
+  rows.sort((a, b) => {
+    const resultA = calculateRowResult(a);
+    const resultB = calculateRowResult(b);
+
+    const valueA = resultA?.[key] ?? 0;
+    const valueB = resultB?.[key] ?? 0;
+
+    if (valueA === valueB) {
+      return 0;
+    }
+
+    return valueA > valueB ? multiplier : -multiplier;
+  });
+
+  return rows;
+}
+
+function toggleSort(sortKey) {
+  if (state.sort.key === sortKey) {
+    state.sort.direction = state.sort.direction === "asc" ? "desc" : "asc";
+  } else {
+    state.sort.key = sortKey;
+    state.sort.direction = "desc";
+  }
+
+  rerender();
+}
+
+function openExpandAllModal() {
+  closeAllMagicComboboxes();
+  closeSequenceModal();
+
+  document.getElementById("expandIncludeCharged").checked = state.expandAll.includeCharged;
+  document.getElementById("expandMaxCastCount").value = String(state.expandAll.maxCastCount);
+
+  document.getElementById("expandAllModalBackdrop").classList.add("open");
+}
+
+function closeExpandAllModal() {
+  document.getElementById("expandAllModalBackdrop").classList.remove("open");
+}
+
+function applyExpandAllModal() {
+  const nextRows = createExpandedMagicRows({
+    includeCharged: state.expandAll.includeCharged,
+    maxCastCount: state.expandAll.maxCastCount
+  });
+
+  if (nextRows.length === 0) return;
+
+  state.rows = nextRows;
+  closeExpandAllModal();
+  rerender();
+}
+
+function updateSortHeaderState() {
+  document.querySelectorAll(".sortable-header").forEach(th => {
+    const sortKey = th.dataset.sortKey;
+    if (state.sort.key === sortKey) {
+      th.dataset.sortDir = state.sort.direction;
+    } else {
+      th.removeAttribute("data-sort-dir");
+    }
+  });
 }
 
 function normalizeSearchText(text) {
@@ -479,11 +631,16 @@ function renderRows() {
   const tbody = document.getElementById("rowsTbody");
   tbody.innerHTML = "";
 
-  state.rows.forEach(row => {
+  getSortedRows().forEach(row => {
     const result = calculateRowResult(row);
     if (!result) return;
 
     const tr = document.createElement("tr");
+
+    // タメが含まれるか判定
+    if (row.castModes.includes("charged")) {
+      tr.classList.add("row-charged");
+    }
 
     let settingCell = "";
     if (result.supportsCharged && result.supportsChain) {
@@ -588,6 +745,7 @@ function renderRows() {
 function rerender() {
   renderEffects();
   renderRows();
+  updateSortHeaderState();
 }
 
 function openSequenceModal(rowId) {
@@ -713,6 +871,36 @@ async function initialize() {
       rerender();
     });
 
+    document.querySelectorAll(".sortable-header").forEach(header => {
+      header.addEventListener("click", () => {
+        toggleSort(header.dataset.sortKey);
+      });
+    });
+
+    document.getElementById("expandAllRowsBtn").addEventListener("click", () => {
+      openExpandAllModal();
+    });
+
+    document.getElementById("expandIncludeCharged").addEventListener("change", event => {
+      state.expandAll.includeCharged = event.target.checked;
+    });
+
+    document.getElementById("expandMaxCastCount").addEventListener("change", event => {
+      state.expandAll.maxCastCount = Number(event.target.value) || 1;
+    });
+
+    document.getElementById("closeExpandAllModalBtn").addEventListener("click", () => {
+      closeExpandAllModal();
+    });
+
+    document.getElementById("cancelExpandAllModalBtn").addEventListener("click", () => {
+      closeExpandAllModal();
+    });
+
+    document.getElementById("applyExpandAllModalBtn").addEventListener("click", () => {
+      applyExpandAllModal();
+    });
+
     document.addEventListener("compositionstart", event => {
       const target = event.target;
       if (target.matches('[data-role="magic-combobox-input"]')) {
@@ -760,7 +948,6 @@ async function initialize() {
         const row = state.rows.find(item => item.id === rowId);
         if (!row) return;
 
-        // 通常の表示モードでは focusout で閉じない
         if (!row.isMagicSearchMode) {
           return;
         }
@@ -994,6 +1181,12 @@ async function initialize() {
     document.getElementById("sequenceModalBackdrop").addEventListener("click", event => {
       if (event.target.id === "sequenceModalBackdrop") {
         closeSequenceModal();
+      }
+    });
+
+    document.getElementById("expandAllModalBackdrop").addEventListener("click", event => {
+      if (event.target.id === "expandAllModalBackdrop") {
+        closeExpandAllModal();
       }
     });
   } catch (error) {
