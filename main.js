@@ -769,10 +769,10 @@ function renderRows() {
         ${createMagicPickerHtml(row)}
       </td>
       <td><div class="metric-cell">${formatNumber(result.dps, 1)}</div></td>
+      <td><div class="metric-cell">${formatNumber(result.totalSeconds, 2)}</div></td>
       <td><div class="metric-cell">${formatNumber(result.fpEfficiency, 1)}</div></td>
       <td><div class="metric-cell">${formatNumber(result.totalDamage, 0)}</div></td>
       <td><div class="metric-cell">${formatNumber(result.totalFp, 0)}</div></td>
-      <td><div class="metric-cell">${formatNumber(result.totalSeconds, 2)}</div></td>
       <td>
         <div class="metric-cell" style="white-space:normal; line-height:1.3; font-size:12px;">
           ${row.castModes.map(mode => mode === "charged" ? "タメ" : "通常").join(" → ")}

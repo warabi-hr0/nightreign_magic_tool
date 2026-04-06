@@ -230,22 +230,22 @@ button {
 
 .compare-table th:nth-child(4),
 .compare-table td:nth-child(4) {
-  width: 62px;
+  width: 45px;
 }
 
 .compare-table th:nth-child(5),
 .compare-table td:nth-child(5) {
-  width: 40px;
+  width: 62px;
 }
 
 .compare-table th:nth-child(6),
 .compare-table td:nth-child(6) {
-  width: 30px;
+  width: 40px;
 }
 
 .compare-table th:nth-child(7),
 .compare-table td:nth-child(7) {
-  width: 45px;
+  width: 30px;
 }
 
 .compare-table th:nth-child(8),
@@ -555,12 +555,12 @@ button {
 
   .compare-table th:nth-child(4),
   .compare-table td:nth-child(4) {
-    width: 36px;
+    width: 40px;
   }
 
   .compare-table th:nth-child(5),
   .compare-table td:nth-child(5) {
-    width: 38px;
+    width: 36px;
   }
 
   .compare-table th:nth-child(6),
@@ -570,7 +570,7 @@ button {
 
   .compare-table th:nth-child(7),
   .compare-table td:nth-child(7) {
-    width: 40px;
+    width: 38px;
   }
 
   .compare-table th:nth-child(8),
@@ -754,12 +754,12 @@ button {
 
   .compare-table th:nth-child(6),
   .compare-table td:nth-child(6) {
-    width: 24px;
+    width: 30px;
   }
 
   .compare-table th:nth-child(7),
   .compare-table td:nth-child(7) {
-    width: 30px;
+    width: 24px;
   }
 
   .compare-table th:nth-child(8),
