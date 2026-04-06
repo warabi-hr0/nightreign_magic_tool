@@ -66,6 +66,7 @@ function createDefaultRow() {
     castCount: 1,
     castModes: ["normal"],
     hitCount: 1,
+    hitRatePercent: 100,
     searchKeyword: "",
     isMagicOpen: false,
     isMagicSearchMode: false
@@ -79,6 +80,7 @@ function cloneRow(row) {
     castCount: row.castCount,
     castModes: [...row.castModes],
     hitCount: row.hitCount ?? 1,
+    hitRatePercent: row.hitRatePercent ?? 100,
     searchKeyword: "",
     isMagicOpen: false,
     isMagicSearchMode: false
@@ -164,6 +166,32 @@ function getMagicCapabilities(magic) {
   };
 }
 
+function isFallingstarMagic(magic) {
+  return Boolean(magic && magic.name === "降り注ぐ魔力");
+}
+
+function getFallingstarResolvedHits(isCharged, hitRatePercent) {
+  const percent = Math.max(10, Math.min(100, Number(hitRatePercent) || 100));
+  const maxProjectiles = isCharged ? 45 : 25;
+  const hitCap = isCharged ? 11 : 9;
+  const rawHits = Math.round(maxProjectiles * (percent / 100));
+  return Math.max(1, Math.min(hitCap, rawHits));
+}
+
+function getDisplayHitText(magic, row, isCharged) {
+  if (!magic || !getMagicCapabilities(magic).supportsHitCount) {
+    return "";
+  }
+
+  if (isFallingstarMagic(magic)) {
+    const percent = Math.max(10, Math.min(100, Number(row.hitRatePercent) || 100));
+    const resolvedHits = getFallingstarResolvedHits(isCharged, percent);
+    return `${percent}%（${resolvedHits}hit相当）`;
+  }
+
+  return `${row.hitCount}hit`;
+}
+
 function syncRowByMagic(row) {
   const magic = getMagicById(row.magicId);
   const caps = getMagicCapabilities(magic);
@@ -173,9 +201,6 @@ function syncRowByMagic(row) {
   }
 
   row.castCount = Math.max(1, Math.min(8, Number(row.castCount) || 1));
-
-  const maxHits = caps.supportsHitCount ? Number(magic.maxHits) : 1;
-  row.hitCount = Math.max(1, Math.min(maxHits, Number(row.hitCount) || 1));
 
   const next = [];
   for (let i = 0; i < row.castCount; i += 1) {
@@ -187,6 +212,19 @@ function syncRowByMagic(row) {
     }
   }
   row.castModes = next;
+
+  if (caps.supportsHitCount) {
+    if (isFallingstarMagic(magic)) {
+      row.hitRatePercent = Math.max(10, Math.min(100, Number(row.hitRatePercent) || 100));
+      row.hitCount = getFallingstarResolvedHits(row.castModes.includes("charged"), row.hitRatePercent);
+    } else {
+      const maxHits = Number(magic.maxHits) || 1;
+      row.hitCount = Math.max(1, Math.min(maxHits, Number(row.hitCount) || 1));
+    }
+  } else {
+    row.hitCount = 1;
+    row.hitRatePercent = 100;
+  }
 }
 
 function getCastStep(magic, mode, index) {
@@ -212,11 +250,20 @@ function calculateRowResult(row) {
 
   const caps = getMagicCapabilities(magic);
   const effects = getSelectedEffects();
-  const appliedHitCount = caps.supportsHitCount ? row.hitCount : 1;
 
   const steps = row.castModes.map((mode, index) => {
     const base = getCastStep(magic, mode, index);
     const mult = getDamageMultiplier(effects, base.isCharged);
+
+    let appliedHitCount = 1;
+    if (caps.supportsHitCount) {
+      if (isFallingstarMagic(magic)) {
+        appliedHitCount = getFallingstarResolvedHits(base.isCharged, row.hitRatePercent);
+      } else {
+        appliedHitCount = row.hitCount;
+      }
+    }
+
     return {
       frames: base.frames,
       fp: base.fp,
@@ -239,7 +286,11 @@ function calculateRowResult(row) {
     totalFp,
     dps,
     fpEfficiency,
-    appliedHitCount
+    appliedHitCount: caps.supportsHitCount
+      ? (isFallingstarMagic(magic)
+          ? getFallingstarResolvedHits(row.castModes.includes("charged"), row.hitRatePercent)
+          : row.hitCount)
+      : 1
   };
 }
 
@@ -655,21 +706,22 @@ function renderRows() {
     } else if (result.supportsCharged) {
       settingCell = `
         <div class="control-stack">
-          <div class="mini-label">タメ設定${result.supportsHitCount ? "/ヒット数" : ""}</div>
+          <div class="mini-label">タメ設定${result.supportsHitCount ? "/命中率" : ""}</div>
           <div class="control-inline">
             <select data-role="single-charge-mode" data-row-id="${row.id}">
               <option value="normal" ${row.castModes[0] === "normal" ? "selected" : ""}>通常</option>
               <option value="charged" ${row.castModes[0] === "charged" ? "selected" : ""}>タメ</option>
             </select>
             ${result.supportsHitCount ? `
-              <select data-role="hit-count" data-row-id="${row.id}">
-                ${Array.from({ length: result.magic.maxHits }, (_, i) => i + 1).map(n => {
-                  const isFallingstar = result.magic.name === "降り注ぐ魔力";
-                  const label = isFallingstar && n === result.magic.maxHits
-                    ? `${n}hit（フルヒット）`
-                    : `${n}hit`;
-                  return `<option value="${n}" ${row.hitCount === n ? "selected" : ""}>${label}</option>`;
-                }).join("")}
+              <select data-role="${isFallingstarMagic(result.magic) ? "hit-rate" : "hit-count"}" data-row-id="${row.id}">
+                ${isFallingstarMagic(result.magic)
+                  ? [10,20,30,40,50,60,70,80,90,100].map(percent => `
+                      <option value="${percent}" ${Number(row.hitRatePercent) === percent ? "selected" : ""}>${percent}%</option>
+                    `).join("")
+                  : Array.from({ length: result.magic.maxHits }, (_, i) => i + 1).map(n => `
+                      <option value="${n}" ${row.hitCount === n ? "selected" : ""}>${n}hit</option>
+                    `).join("")
+                }
               </select>
             ` : ""}
           </div>
@@ -685,14 +737,15 @@ function renderRows() {
             `).join("")}
           </select>
           ${result.supportsHitCount ? `
-            <select data-role="hit-count" data-row-id="${row.id}">
-              ${Array.from({ length: result.magic.maxHits }, (_, i) => i + 1).map(n => {
-                const isFallingstar = result.magic.name === "降り注ぐ魔力";
-                const label = isFallingstar && n === result.magic.maxHits
-                  ? `${n}hit（フルヒット）`
-                  : `${n}hit`;
-                return `<option value="${n}" ${row.hitCount === n ? "selected" : ""}>${label}</option>`;
-              }).join("")}
+            <select data-role="${isFallingstarMagic(result.magic) ? "hit-rate" : "hit-count"}" data-row-id="${row.id}">
+              ${isFallingstarMagic(result.magic)
+                ? [10,20,30,40,50,60,70,80,90,100].map(percent => `
+                    <option value="${percent}" ${Number(row.hitRatePercent) === percent ? "selected" : ""}>${percent}%</option>
+                  `).join("")
+                : Array.from({ length: result.magic.maxHits }, (_, i) => i + 1).map(n => `
+                    <option value="${n}" ${row.hitCount === n ? "selected" : ""}>${n}hit</option>
+                  `).join("")
+              }
             </select>
           ` : ""}
         </div>
@@ -700,9 +753,9 @@ function renderRows() {
     } else if (result.supportsHitCount) {
       settingCell = `
         <div class="control-stack">
-          <div class="mini-label">ヒット数</div>
+          <div class="mini-label">${isFallingstarMagic(result.magic) ? "命中率" : "ヒット数"}</div>
           <button type="button" class="ghost-btn" data-role="open-sequence-modal" data-row-id="${row.id}">
-            設定（${result.magic.name === "降り注ぐ魔力" && row.hitCount === result.magic.maxHits ? `${row.hitCount}hit（フルヒット）` : `${row.hitCount}hit`}）
+            設定（${getDisplayHitText(result.magic, row, row.castModes.includes("charged"))}）
           </button>
         </div>
       `;
@@ -724,9 +777,7 @@ function renderRows() {
         <div class="metric-cell" style="white-space:normal; line-height:1.3; font-size:12px;">
           ${row.castModes.map(mode => mode === "charged" ? "タメ" : "通常").join(" → ")}
           ${result.supportsHitCount
-            ? `<br>${result.magic.name === "降り注ぐ魔力" && row.hitCount === result.magic.maxHits
-                ? `${row.hitCount}hit（フルヒット）`
-                : `${row.hitCount}hit`}`
+            ? `<br>${getDisplayHitText(result.magic, row, row.castModes.includes("charged"))}`
             : ""}
         </div>
       </td>
@@ -759,7 +810,9 @@ function openSequenceModal(rowId) {
   state.modal.rowId = rowId;
   state.modal.draftCastCount = row.castCount;
   state.modal.draftCastModes = [...row.castModes];
-  state.modal.draftHitCount = row.hitCount || 1;
+  state.modal.draftHitCount = isFallingstarMagic(magic)
+    ? (row.hitRatePercent || 100)
+    : (row.hitCount || 1);
 
   document.getElementById("modalMagicName").textContent = magic.name;
   renderModalContents();
@@ -802,15 +855,24 @@ function renderModalContents() {
 
   if (caps.supportsHitCount && hitCountWrap && hitCountSelect) {
     hitCountWrap.style.display = "";
-    hitCountSelect.innerHTML = Array.from({ length: magic.maxHits }, (_, i) => i + 1)
-      .map(n => {
-        const isFallingstar = magic.name === "降り注ぐ魔力";
-        const label = isFallingstar && n === magic.maxHits
-          ? `${n}hit（フルヒット）`
-          : `${n}hit`;
-        return `<option value="${n}" ${state.modal.draftHitCount === n ? "selected" : ""}>${label}</option>`;
-      })
-      .join("");
+
+    const isCharged = state.modal.draftCastModes.includes("charged");
+
+    if (isFallingstarMagic(magic)) {
+      hitCountWrap.querySelector(".mini-label").textContent = "命中率";
+      hitCountSelect.innerHTML = [10,20,30,40,50,60,70,80,90,100]
+        .map(percent => `
+          <option value="${percent}" ${Number(state.modal.draftHitCount || state.modal.draftHitRatePercent || 100) === percent ? "selected" : ""}>
+            ${percent}%
+          </option>
+        `)
+        .join("");
+    } else {
+      hitCountWrap.querySelector(".mini-label").textContent = "ヒット数";
+      hitCountSelect.innerHTML = Array.from({ length: magic.maxHits }, (_, i) => i + 1)
+        .map(n => `<option value="${n}" ${state.modal.draftHitCount === n ? "selected" : ""}>${n}hit</option>`)
+        .join("");
+    }
   } else if (hitCountWrap && hitCountSelect) {
     hitCountWrap.style.display = "none";
     hitCountSelect.innerHTML = "";
@@ -1054,6 +1116,9 @@ async function initialize() {
         case "hit-count":
           row.hitCount = Number(target.value) || 1;
           break;
+        case "hit-rate":
+          row.hitRatePercent = Number(target.value) || 100;
+          break;
         default:
           return;
       }
@@ -1127,7 +1192,13 @@ async function initialize() {
 
         row.castCount = state.modal.draftCastCount;
         row.castModes = [...state.modal.draftCastModes];
-        row.hitCount = state.modal.draftHitCount;
+
+        const currentMagic = getMagicById(row.magicId);
+        if (isFallingstarMagic(currentMagic)) {
+          row.hitRatePercent = Number(state.modal.draftHitCount) || 100;
+        } else {
+          row.hitCount = Number(state.modal.draftHitCount) || 1;
+        }
 
         syncRowByMagic(row);
         closeSequenceModal();
