@@ -73,14 +73,6 @@
     "magicType": ""
   },
   {
-    "id": "magic-010",
-    "name": "創星雨",
-    "damage": { "normal": 224, "charged": 285 },
-    "frames": { "normal": 117, "charged": 141, "chainNormal": 0, "chainCharged": 0 },
-    "fp": { "normal": 27, "charged": 32 },
-    "magicType": ""
-  },
-  {
     "id": "magic-011",
     "name": "魔術の輝剣",
     "damage": { "normal": 120, "charged": 134 },
@@ -91,8 +83,8 @@
   {
     "id": "magic-012",
     "name": "降り注ぐ魔力",
-    "damage": { "normal": 308, "charged": 377 },
-    "frames": { "normal": 114, "charged": 142, "chainNormal": 0, "chainCharged": 0 },
+    "damage": { "normal": 34, "charged": 34 },
+    "frames": { "normal": 117, "charged": 141, "chainNormal": 0, "chainCharged": 0 },
     "fp": { "normal": 18, "charged": 18 },
     "magicType": "",
     "maxHits": 5
@@ -108,7 +100,7 @@
   {
     "id": "magic-014",
     "name": "ローレッタの絶技",
-    "damage": { "normal": 375, "charged": 387 },
+    "damage": { "normal": 285, "charged": 387 },
     "frames": { "normal": 209, "charged": 315, "chainNormal": 0, "chainCharged": 0 },
     "fp": { "normal": 39, "charged": 39 },
     "magicType": ""
